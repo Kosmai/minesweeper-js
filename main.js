@@ -6,7 +6,6 @@ const TILE_COLORS = ['#e4e4e4','#f2f94f','#7df94f','#3cf9f2','#f8ad2c','#1928ff'
 
 const NUM_OF_MINES = 30;
 
-const koubaScreen = document.getElementById('koubaScreen');
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
 const newGameBtn = document.getElementById('newGameButton');
@@ -15,22 +14,11 @@ const joinGameBtn = document.getElementById('joinGameButton');
 const gameDifficultyDisplay = document.getElementById('gameDifficultyDisplay');
 
 newGameBtn.addEventListener('click', newGame);
-newGameProBtn.addEventListener('click', newProGame);
-
-PRO_MODE = false;
 
 state = {};
-
-function newProGame(){
-  click_counter = 0;
-  PRO_MODE = true;
-  state = init();
-  paintCanvas();
-  paintGame();
-}
+timer = null;
 
 function newGame() {
-  click_counter = 0;
   state = init();
   paintCanvas();
   paintGame(state);
@@ -40,15 +28,13 @@ let canvas, ctx;
 let playerNumber;
 let gameActive = false;
 
-function displayKouba(){
-  if(!PRO_MODE){
-    window.alert("You lost");
-    location.reload();
-    return;
-  }
-  gameScreen.style.display = "none";
-  initialScreen.style.display = "none"
-  koubaScreen.style.display = "block";
+function initTimer(field){
+  var start = Date.now();
+  var timer = setInterval(function() {
+    var delta = Date.now() - start; // milliseconds elapsed since start
+    field.innerHTML = Math.floor(delta / 1000);
+  }, 100); // update about every 100ms
+
 }
 
 function init() {
@@ -56,6 +42,7 @@ function init() {
   gameScreen.style.display = "block";
 
   initialState = createInitialGameState();
+  timer = initTimer(gameDifficultyDisplay);
 
   canvas = document.getElementById('canvas');
   ctx = canvas.getContext('2d');
@@ -218,8 +205,10 @@ function paintGame(state) {
     for(var y = 0; y < state.gridsize; y++){
       tile = state.table[x][y];
       explored = state.explored[x][y];
-      console.log(explored);
+
       if(explored == 0){
+        ctx.fillStyle = FLAG_COLOR;
+        ctx.fillText(".", x * tileSize + 10, y * tileSize + 17);
         continue;
       }
       else if(explored == 1){
@@ -230,7 +219,7 @@ function paintGame(state) {
         else{
           ctx.fillStyle = TILE_COLORS[tile];
           if(tile == 0){
-            tile = ".";
+            tile = "";
           }
           ctx.fillText(tile, x * tileSize + 9, y * tileSize + 22);
         }
@@ -264,7 +253,7 @@ function revealTile(x, y, state){
   }
   if(isMine(x, y, state)){
     //lose
-    displayKouba();
+    loseGame();
     return;
   }
   exploreTile(x,y,state);
@@ -276,14 +265,13 @@ function openTile(x, y){
   }
   if(isMine(x, y, state)){
     //lose
-    displayKouba();
+    loseGame();
     return;
   }
   if(!isOpen(x, y, state)){
     exploreTile(x, y, state);
   }
   else{
-      console.log("test");
       //todo check amount of flags is good
       revealTile(x-1,y-1,state);
       revealTile(x-1, y ,state);
@@ -323,6 +311,14 @@ function exploreTile(x, y, state){
   return;
 }
 
+function loseGame(){
+  //implement something better
+  window.alert("You lost");
+  clearInterval(timer);
+  initialScreen.style.display = "block";
+  gameScreen.style.display = "none";
+}
+
 function outOfBounds(x,y,state){
   if(x < 0 || x >= state.gridsize || y < 0 || y >= state.gridsize){
     return true;
@@ -355,7 +351,7 @@ function getCursorPosition(canvas, event, tilesize) {
   const rect = canvas.getBoundingClientRect()
   const x = event.clientX - rect.left
   const y = event.clientY - rect.top
-  //console.log("x: " + x + " y: " + y)
+
   if(event.which == 1){
     handleCanvasLeftClick(x, y, tilesize);
   }
@@ -365,15 +361,10 @@ function getCursorPosition(canvas, event, tilesize) {
 }
 
 function handleCanvasRightClick(x, y, tilesize){
-  click_counter++;
   flagTile(Math.floor(x/tilesize), Math.floor(y/tilesize));
 }
 
 function handleCanvasLeftClick(x, y, tilesize){
-  click_counter++;
-  if(click_counter >= 8){
-    displayKouba();
-  }
   openTile(Math.floor(x/tilesize), Math.floor(y/tilesize));
 }
 
