@@ -1,31 +1,36 @@
 const BG_COLOUR = '#231f20';
 const MINE_COLOR = '#e66916';
 const FLAG_COLOR = '#c2c2c2'
-const COLOR_0 = '#e4e4e4';
-const COLOR_1 = '#f2f94f';
-const COLOR_2 = '#7df94f';
-const COLOR_3 = '#3cf9f2';
-const COLOR_4 = '#f8ad2c';
-const COLOR_5 = '#1928ff';
-const COLOR_6 = '#12ff6f';
-const COLOR_7 = '#fc12ff';
-const COLOR_8 = '#ff0000';
 const TILE_COLORS = ['#e4e4e4','#f2f94f','#7df94f','#3cf9f2','#f8ad2c','#1928ff','#12ff6f','#fc12ff','#ff0000'];
 
 
 const NUM_OF_MINES = 30;
 
+const koubaScreen = document.getElementById('koubaScreen');
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
 const newGameBtn = document.getElementById('newGameButton');
+const newGameProBtn = document.getElementById('newGameProButton');
 const joinGameBtn = document.getElementById('joinGameButton');
 const gameDifficultyDisplay = document.getElementById('gameDifficultyDisplay');
 
 newGameBtn.addEventListener('click', newGame);
+newGameProBtn.addEventListener('click', newProGame);
+
+PRO_MODE = false;
 
 state = {};
 
+function newProGame(){
+  click_counter = 0;
+  PRO_MODE = true;
+  state = init();
+  paintCanvas();
+  paintGame();
+}
+
 function newGame() {
+  click_counter = 0;
   state = init();
   paintCanvas();
   paintGame(state);
@@ -34,6 +39,15 @@ function newGame() {
 let canvas, ctx;
 let playerNumber;
 let gameActive = false;
+
+function displayKouba(){
+  if(!PRO_MODE){
+    return;
+  }
+  gameScreen.style.display = "none";
+  initialScreen.style.display = "none"
+  koubaScreen.style.display = "block";
+}
 
 function init() {
   initialScreen.style.display = "none";
@@ -268,6 +282,7 @@ function openTile(x, y){
   }
   else{
       console.log("test");
+      //todo check amount of flags is good
       revealTile(x-1,y-1,state);
       revealTile(x-1, y ,state);
       revealTile(x-1,y+1,state);
@@ -348,10 +363,15 @@ function getCursorPosition(canvas, event, tilesize) {
 }
 
 function handleCanvasRightClick(x, y, tilesize){
+  click_counter++;
   flagTile(Math.floor(x/tilesize), Math.floor(y/tilesize));
 }
 
 function handleCanvasLeftClick(x, y, tilesize){
+  click_counter++;
+  if(click_counter >= 8){
+    displayKouba();
+  }
   openTile(Math.floor(x/tilesize), Math.floor(y/tilesize));
 }
 

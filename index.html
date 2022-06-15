@@ -9,9 +9,12 @@
 #gameScreen {
   display: none;
 }
+#koubaScreen {
+  display: none;
+}
 </style>
 </head>
-<body>
+<body style="background-image:url('https://cdn.wallpapersafari.com/38/60/RvLtEc.jpg'); background-repeat: no-repeat; background-size: cover">
 
   <section class="vh-100">
     <div class="container h-100">
@@ -24,7 +27,16 @@
               class="btn btn-success"
               id="newGameButton"
             >
-              Start New Game
+              Basic Mode
+            </button>
+
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="newGameProButton"
+              style="margin:10px;"
+            >
+              Explosive Mode
             </button>
         </div>
       </div>
@@ -32,8 +44,14 @@
       <div id="gameScreen" class="h-100">
         <div class="d-flex flex-column align-items-center justify-content-center h-100">
 
-          <h1>Your game difficulty is: <span id="gameDifficultyDisplay"></span></h1>
+          <h1>Minesweeper 20x20 - 30 Mines<span id="gameDifficultyDisplay"></span></h1>
           <canvas class="canvas" id="canvas"></canvas>
+        </div>
+      </div>
+
+      <div id="koubaScreen" class="h-100">
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+          <img src="https://www.madgik.di.uoa.gr/sites/default/files/2019-11/Koubarakis0283.jpg" style="width:80%">
         </div>
       </div>
 
