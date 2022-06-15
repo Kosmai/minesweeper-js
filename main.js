@@ -262,6 +262,7 @@ function revealTile(x, y, state){
   }
   if(isMine(x, y, state)){
     //lose
+    displayKouba();
     window.alert("You lost");
     return;
   }
@@ -274,6 +275,7 @@ function openTile(x, y){
   }
   if(isMine(x, y, state)){
     //lose
+    displayKouba();
     window.alert("You lost");
     return;
   }
