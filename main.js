@@ -1,6 +1,18 @@
 const BG_COLOUR = '#231f20';
-const OPEN_COLOR = '#c2c2c2';
 const MINE_COLOR = '#e66916';
+const FLAG_COLOR = '#c2c2c2'
+const COLOR_0 = '#e4e4e4';
+const COLOR_1 = '#f2f94f';
+const COLOR_2 = '#7df94f';
+const COLOR_3 = '#3cf9f2';
+const COLOR_4 = '#f8ad2c';
+const COLOR_5 = '#1928ff';
+const COLOR_6 = '#12ff6f';
+const COLOR_7 = '#fc12ff';
+const COLOR_8 = '#ff0000';
+const TILE_COLORS = ['#e4e4e4','#f2f94f','#7df94f','#3cf9f2','#f8ad2c','#1928ff','#12ff6f','#fc12ff','#ff0000'];
+
+
 const NUM_OF_MINES = 30;
 
 const gameScreen = document.getElementById('gameScreen');
@@ -14,7 +26,6 @@ newGameBtn.addEventListener('click', newGame);
 state = {};
 
 function newGame() {
-  console.log("gg");
   state = init();
   paintCanvas();
   paintGame(state);
@@ -166,16 +177,16 @@ function paintCanvas(){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   const gridsize = state.gridsize;
   const tileSize = canvas.width / gridsize;
-  for (x=0;x<=600;x+=30) {
-        for (y=0;y<=600;y+=30) {
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, 600);
-            ctx.stroke();
-            ctx.moveTo(0, y);
-            ctx.lineTo(600, y);
-            ctx.stroke();
-        }
-    }
+  // for (x=0;x<=600;x+=30) {
+  //       for (y=0;y<=600;y+=30) {
+  //           ctx.moveTo(x, 0);
+  //           ctx.lineTo(x, 600);
+  //           ctx.stroke();
+  //           ctx.moveTo(0, y);
+  //           ctx.lineTo(600, y);
+  //           ctx.stroke();
+  //       }
+  //   }
 }
 
 function paintGame(state) {
@@ -183,7 +194,8 @@ function paintGame(state) {
   const gridsize = state.gridsize;
   const tileSize = canvas.width / gridsize;
 
-  ctx.fillStyle = MINE_COLOR;
+  paintCanvas();
+
   ctx.font = "20px Arial";
 
   for(var x = 0; x < state.gridsize; x++){
@@ -196,13 +208,19 @@ function paintGame(state) {
       }
       else if(explored == 1){
         if(tile >= 100){
+          ctx.fillStyle = MINE_COLOR;
           ctx.fillText("x", x * tileSize + 9, y * tileSize + 22);
         }
         else{
+          ctx.fillStyle = TILE_COLORS[tile];
+          if(tile == 0){
+            tile = ".";
+          }
           ctx.fillText(tile, x * tileSize + 9, y * tileSize + 22);
         }
       }
       else if(explored == 2){
+        ctx.fillStyle = FLAG_COLOR;
         ctx.fillText("#", x * tileSize + 9, y * tileSize + 22);
       }
     }
@@ -211,21 +229,55 @@ function paintGame(state) {
 
 function flagTile(tileX, tileY){
   if(!isOpen(tileX, tileY, state)){
-    state.explored[tileX][tileY] = 2;
+    if(isFlagged(tileX, tileY, state)){
+      state.explored[tileX][tileY] = 0;
+    }
+    else{
+      state.explored[tileX][tileY] = 2;
+    }
     paintGame(state);
   }
 }
 
-function openTile(tileX, tileY){
-  if(isMine(tileX, tileY, state)){
+function revealTile(x, y, state){
+  if(outOfBounds(x,y,state)){
+    return;
+  }
+  if(isFlagged(x, y, state)){
+    return;
+  }
+  if(isMine(x, y, state)){
     //lose
     window.alert("You lost");
     return;
   }
-  if(!isOpen(tileX, tileY, state)){
-    exploreTile(tileX, tileY, state);
-    paintGame(state);
+  exploreTile(x,y,state);
+}
+
+function openTile(x, y){
+  if(isFlagged(x, y, state)){
+    return;
   }
+  if(isMine(x, y, state)){
+    //lose
+    window.alert("You lost");
+    return;
+  }
+  if(!isOpen(x, y, state)){
+    exploreTile(x, y, state);
+  }
+  else{
+      console.log("test");
+      revealTile(x-1,y-1,state);
+      revealTile(x-1, y ,state);
+      revealTile(x-1,y+1,state);
+      revealTile( x ,y-1,state);
+      revealTile( x ,y+1,state);
+      revealTile(x+1,y-1,state);
+      revealTile(x+1, y ,state);
+      revealTile(x+1,y+1,state);    
+  }
+  paintGame(state);
 }
 
 function exploreTile(x, y, state){
@@ -233,6 +285,9 @@ function exploreTile(x, y, state){
     return;
   }
   if(isMine(x,y,state)){
+    return;
+  }
+  if(isFlagged(x,y,state)){
     return;
   }
   if(!isOpen(x, y, state)){
@@ -267,6 +322,13 @@ function isMine(x, y, state){
 
 function isOpen(x, y, state){
   if(state.explored[x][y] == 1){
+    return true;
+  }
+  return false;
+}
+
+function isFlagged(x, y, state){
+  if(state.explored[x][y] == 2){
     return true;
   }
   return false;
