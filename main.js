@@ -42,6 +42,7 @@ let gameActive = false;
 
 function displayKouba(){
   if(!PRO_MODE){
+    window.alert("You lost");
     location.reload();
     return;
   }
@@ -263,7 +264,6 @@ function revealTile(x, y, state){
   }
   if(isMine(x, y, state)){
     //lose
-    window.alert("You lost");
     displayKouba();
     return;
   }
@@ -276,7 +276,6 @@ function openTile(x, y){
   }
   if(isMine(x, y, state)){
     //lose
-    window.alert("You lost");
     displayKouba();
     return;
   }
