@@ -42,6 +42,7 @@ let gameActive = false;
 
 function displayKouba(){
   if(!PRO_MODE){
+    location.reload();
     return;
   }
   gameScreen.style.display = "none";
@@ -262,8 +263,8 @@ function revealTile(x, y, state){
   }
   if(isMine(x, y, state)){
     //lose
-    displayKouba();
     window.alert("You lost");
+    displayKouba();
     return;
   }
   exploreTile(x,y,state);
@@ -275,8 +276,8 @@ function openTile(x, y){
   }
   if(isMine(x, y, state)){
     //lose
-    displayKouba();
     window.alert("You lost");
+    displayKouba();
     return;
   }
   if(!isOpen(x, y, state)){
