@@ -1,6 +1,6 @@
 const BG_COLOUR = '#231f20';
 const MINE_COLOR = '#e66916';
-const FLAG_COLOR = '#c2c2c2'
+const FLAG_COLOR = '#c2c2c2';
 const TILE_COLORS = ['#e4e4e4','#f2f94f','#7df94f','#3cf9f2','#f8ad2c','#1928ff','#12ff6f','#fc12ff','#ff0000'];
 
 const LEFT_CLICK = 1;
@@ -9,6 +9,7 @@ const UNEXPLORED = 0;
 const EXPLORED = 1;
 const FLAGGED = 2;
 
+//html handles
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
 const statsScreen = document.getElementById('statsScreen');
@@ -21,49 +22,175 @@ const joinGameBtn = document.getElementById('joinGameButton');
 const clearStatsBtn = document.getElementById('clearStatsButton');
 const timerDisplay = document.getElementById('timerDisplay');
 
+//Those will change based on difficulty
 const CANVAS_SIZE = 600;
 const GRID_SIZE = 20;
 const NUM_OF_MINES = 30;
 
+//globals
 let canvas, ctx, timer, state, elapsedSeconds;
-gameStarted = false;
+let gameStarted = false;
 
-
+//event listeners
 newGameBtn.addEventListener('click', newGame);
 restartBtn.addEventListener('click', restartGame);
 statsBtn.addEventListener('click', showStats);
 menuBtn.addEventListener('click', changeToMenuScreen);
 clearStatsBtn.addEventListener('click', clearStats);
 
+
 setUpCanvas();
 
+
+
+
+
+
+
 function newGame() {
-  state = init();
+  state = beginGame();
   paintCanvas();
   paintGame(state);
+}
+
+function beginGame() {
+  changeToGameScreen();
+
+  initialState = createInitialGameState();
+
+  const wins = localStorage.getItem('wins');
+  const losses = localStorage.getItem('losses');
+
+  if(wins === null || losses === null){
+    localStorage.setItem('wins', 0);
+    localStorage.setItem('losses', 0);
+    localStorage.setItem('totalGames', 0);
+  }
+
+  return initialState;
 }
 
 function restartGame(){
   location.reload();
 }
 
-function showStats(){
+
+
+//CHANGE SCREEN FUNCTIONS
+
+
+function changeToGameScreen(){
   initialScreen.style.display = "none";
+  gameScreen.style.display = "block";
+  statsScreen.style.display = "none";
+}
+
+function changeToMenuScreen(){
+  initialScreen.style.display = "block";
+  gameScreen.style.display = "none";
+  statsScreen.style.display = "none";
+}
+
+function changeToStatsScreen(){
+  initialScreen.style.display = "none";
+  gameScreen.style.display = "none";
   statsScreen.style.display = "block";
-   document.getElementById('stats').innerHTML = "";
-  document.getElementById('stats').innerHTML += "<h2>Wins: " + localStorage.getItem('wins') + "</h2>";
-  document.getElementById('stats').innerHTML += "<h2>Losses: " + localStorage.getItem('losses') + "</h2>";
+}
+
+
+//GAME DISPLAY FUNCTIONS
+
+
+function paintGame(state) {
+  const table = state.table;
+  const gridsize = state.gridsize;
+  const tileSize = canvas.width / gridsize;
+
+  paintCanvas();
+
+  ctx.font = "20px Arial";
+
+  for(var x = 0; x < gridsize; x++){
+    for(var y = 0; y < gridsize; y++){
+      tile = state.table[x][y];
+      explored = state.explored[x][y];
+
+      if(explored == UNEXPLORED){
+        ctx.fillStyle = FLAG_COLOR;
+        ctx.fillText(".", x * tileSize + 10, y * tileSize + 17);
+        continue;
+      }
+      else if(explored == EXPLORED){
+        if(tile >= 100){
+          ctx.fillStyle = MINE_COLOR;
+          ctx.fillText("x", x * tileSize + 9, y * tileSize + 22);
+        }
+        else{
+          ctx.fillStyle = TILE_COLORS[tile];
+          if(tile == 0){
+            tile = "";
+          }
+          ctx.fillText(tile, x * tileSize + 9, y * tileSize + 22);
+        }
+      }
+      else if(explored == FLAGGED){
+        ctx.fillStyle = FLAG_COLOR;
+        ctx.fillText("#", x * tileSize + 9, y * tileSize + 22);
+      }
+    }
+  }
+}
+
+
+//EVENT HANDLING FUNCTIONS
+
+
+function loseGame(){
+  //implement something better
+  window.alert("You lost");
+  localStorage.setItem("losses", parseInt(localStorage.getItem("losses")) + 1);
+  finalizeGame();
+}
+
+function winGame(){
+  //implement something better
+  window.alert("You won in " + elapsedSeconds + " seconds");
+  localStorage.setItem("wins", parseInt(localStorage.getItem("wins")) + 1);
+  finalizeGame();
+}
+
+function finalizeGame(){
+  gameStarted = false;
+  localStorage.setItem("totalGames", parseInt(localStorage.getItem("totalGames")) + 1);
+  clearInterval(timer);
+  resetTimerDisplay(timerDisplay);
+  changeToMenuScreen();
+}
+
+
+//STATS FUNCTIONS
+
+
+function showStats(){
+  changeToStatsScreen();
+  document.getElementById('stats').innerHTML = "";
+  document.getElementById('stats').innerHTML += "<h2>Total Games: " + localStorage.getItem('totalGames') + "</h2>";
+  document.getElementById('stats').innerHTML += "<h2>    Wins:    " + localStorage.getItem('wins') + "</h2>";
+  document.getElementById('stats').innerHTML += "<h2>   Losses:   " + localStorage.getItem('losses') + "</h2>";
 }
 
 function clearStats(){
+  localStorage.setItem("totalGames", 0);
   localStorage.setItem("wins", 0);
   localStorage.setItem("losses", 0);
   showStats();
 }
 
 
+//TIMER FUNCTIONS
+
+
 function initTimer(field){
-  console.log("timer");
   var start = Date.now();
   timer = setInterval(function() {
     var delta = Date.now() - start; // milliseconds elapsed since start
@@ -99,51 +226,13 @@ function initTimer(field){
   return timer;
 }
 
-function resetTimer(field){
+function resetTimerDisplay(field){
   field.innerHTML = "00:00";
 }
 
-function init() {
-  changeToGameScreen();
 
-  initialState = createInitialGameState();
+//GAME MECHANICS RELATED FUNCTIONS
 
-  const wins = localStorage.getItem('wins');
-  const losses = localStorage.getItem('losses');
-
-  if(wins === null || losses === null){
-    localStorage.setItem('wins', 0);
-    localStorage.setItem('losses', 0);
-  }
-
-  return initialState;
-}
-
-function setUpCanvas(){
-  canvas = document.getElementById('canvas');
-  ctx = canvas.getContext('2d');
-
-  canvas.width = canvas.height = CANVAS_SIZE;
-  const tileSize = canvas.width / GRID_SIZE;
-
-  ctx.fillStyle = BG_COLOUR;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  canvas.addEventListener('contextmenu', event => event.preventDefault());
-  canvas.addEventListener('mousedown', function(e) {
-  getCursorPosition(canvas, e, tileSize)})
-}
-
-function changeToGameScreen(){
-  initialScreen.style.display = "none";
-  gameScreen.style.display = "block";
-}
-
-function changeToMenuScreen(){
-  initialScreen.style.display = "block";
-  gameScreen.style.display = "none";
-  statsScreen.style.display = "none";
-}
 
 function createInitialGameState() {
   initialState = {
@@ -218,53 +307,6 @@ function createInitialGameState() {
   return initialState;
 }
 
-function paintCanvas(){
-  ctx.fillStyle = BG_COLOUR;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const gridsize = state.gridsize;
-  const tileSize = canvas.width / gridsize;
-}
-
-function paintGame(state) {
-  const table = state.table;
-  const gridsize = state.gridsize;
-  const tileSize = canvas.width / gridsize;
-
-  paintCanvas();
-
-  ctx.font = "20px Arial";
-
-  for(var x = 0; x < gridsize; x++){
-    for(var y = 0; y < gridsize; y++){
-      tile = state.table[x][y];
-      explored = state.explored[x][y];
-
-      if(explored == UNEXPLORED){
-        ctx.fillStyle = FLAG_COLOR;
-        ctx.fillText(".", x * tileSize + 10, y * tileSize + 17);
-        continue;
-      }
-      else if(explored == EXPLORED){
-        if(tile >= 100){
-          ctx.fillStyle = MINE_COLOR;
-          ctx.fillText("x", x * tileSize + 9, y * tileSize + 22);
-        }
-        else{
-          ctx.fillStyle = TILE_COLORS[tile];
-          if(tile == 0){
-            tile = "";
-          }
-          ctx.fillText(tile, x * tileSize + 9, y * tileSize + 22);
-        }
-      }
-      else if(explored == FLAGGED){
-        ctx.fillStyle = FLAG_COLOR;
-        ctx.fillText("#", x * tileSize + 9, y * tileSize + 22);
-      }
-    }
-  }
-}
-
 function flagTile(x, y){
   if(!isExplored(x, y, state)){
     if(isFlagged(x, y, state)){
@@ -285,7 +327,6 @@ function revealTile(x, y, state){
     return;
   }
   if(isMine(x, y, state)){
-    //lose
     loseGame();
     return;
   }
@@ -297,7 +338,6 @@ function openTile(x, y){
     return;
   }
   if(isMine(x, y, state)){
-    //lose
     loseGame();
     return;
   }
@@ -305,10 +345,10 @@ function openTile(x, y){
     exploreTile(x, y, state);
   }
   else{
+      //checks that the amount of flags is equal to the number of the tile
       if(!isSatisfied(x,y,state)){
         return;
       }
-      //todo check amount of flags is good
       revealTile(x-1,y-1,state);
       revealTile(x-1, y ,state);
       revealTile(x-1,y+1,state);
@@ -365,27 +405,30 @@ function exploreTile(x, y, state){
   return;
 }
 
-function loseGame(){
-  gameStarted = false;
-  //implement something better
-  localStorage.setItem("losses", parseInt(localStorage.getItem("losses")) + 1);
-  window.alert("You lost");
-  clearInterval(timer);
-  resetTimer(timerDisplay);
-  initialScreen.style.display = "block";
-  gameScreen.style.display = "none";
+function checkWinCondition(state){
+  var flags = 0;
+  var valid_flags = 0;
+  //count how many flags exist and how many are correct
+  for(var x=0; x<=state.gridsize; x++){
+    for(var y=0; y<=state.gridsize; y++){
+      if(isFlagged(x,y,state)){
+        flags++;
+        if(isMine(x,y,state)){
+          valid_flags++;
+        }
+      }
+    }
+  }
+  //check that all flags are valid and equal to the mine amount
+  if(flags == NUM_OF_MINES && flags == valid_flags){
+    return true;
+  }
+  return false;
 }
 
-function winGame(){
-  gameStarted = false;
-  //implement something better
-  window.alert("You won in " + elapsedSeconds + " seconds");
-  localStorage.setItem("losses", parseInt(localStorage.getItem("wins")) + 1);
-  clearInterval(timer);
-  resetTimer(timerDisplay);
-  initialScreen.style.display = "block";
-  gameScreen.style.display = "none";  
-}
+
+//GAME MECHANICS HELPER FUNCTIONS
+
 
 function outOfBounds(x,y,state){
   if(x < 0 || x >= state.gridsize || y < 0 || y >= state.gridsize){
@@ -421,26 +464,24 @@ function isFlagged(x, y, state){
   return false;
 }
 
-function checkWinCondition(state){
-  var flags = 0;
-  var valid_flags = 0;
-  //count how many flags exist and how many are correct
-  for(var x=0; x<=state.gridsize; x++){
-    for(var y=0; y<=state.gridsize; y++){
-      if(isFlagged(x,y,state)){
-        flags++;
-        if(isMine(x,y,state)){
-          valid_flags++;
-        }
-      }
-    }
-  }
-  //check that all flags are valid and equal to the mine amount
-  if(flags == NUM_OF_MINES && flags == valid_flags){
-    return true;
-  }
-  return false;
+
+//CANVAS HANDLING FUNCTIONS
+
+function setUpCanvas(){
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+
+  canvas.width = canvas.height = CANVAS_SIZE;
+  const tileSize = canvas.width / GRID_SIZE;
+
+  ctx.fillStyle = BG_COLOUR;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  canvas.addEventListener('contextmenu', event => event.preventDefault());
+  canvas.addEventListener('mousedown', function(e) {
+  getCursorPosition(canvas, e, tileSize)})
 }
+
 
 function getCursorPosition(canvas, event, tilesize) {
   const rect = canvas.getBoundingClientRect()
@@ -469,6 +510,15 @@ function handleCanvasLeftClick(x, y, tilesize){
   }
   openTile(Math.floor(x/tilesize), Math.floor(y/tilesize));
 }
+
+function paintCanvas(){
+  ctx.fillStyle = BG_COLOUR;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const gridsize = state.gridsize;
+  const tileSize = canvas.width / gridsize;
+}
+
+//UTILS
 
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
