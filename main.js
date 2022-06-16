@@ -12,14 +12,11 @@ const FLAGGED = 2;
 //html handles
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
-const statsScreen = document.getElementById('statsScreen');
 const newGameBtn = document.getElementById('newGameButton');
 const restartBtn = document.getElementById('restartButton');
 const newGameProBtn = document.getElementById('newGameProButton');
 const statsBtn = document.getElementById('statsButton');
-const menuBtn = document.getElementById('menuButton');
 const joinGameBtn = document.getElementById('joinGameButton');
-const clearStatsBtn = document.getElementById('clearStatsButton');
 const timerDisplay = document.getElementById('timerDisplay');
 
 //Those will change based on difficulty
@@ -34,17 +31,10 @@ let gameStarted = false;
 //event listeners
 newGameBtn.addEventListener('click', newGame);
 restartBtn.addEventListener('click', restartGame);
-statsBtn.addEventListener('click', showStats);
-menuBtn.addEventListener('click', changeToMenuScreen);
-clearStatsBtn.addEventListener('click', clearStats);
-
+statsBtn.addEventListener('click', showStats)
 
 setUpCanvas();
-
-
-
-
-
+initializeStatistics();
 
 
 function newGame() {
@@ -57,15 +47,6 @@ function beginGame() {
   changeToGameScreen();
 
   initialState = createInitialGameState();
-
-  const wins = localStorage.getItem('wins');
-  const losses = localStorage.getItem('losses');
-
-  if(wins === null || losses === null){
-    localStorage.setItem('wins', 0);
-    localStorage.setItem('losses', 0);
-    localStorage.setItem('totalGames', 0);
-  }
 
   return initialState;
 }
@@ -82,20 +63,13 @@ function restartGame(){
 function changeToGameScreen(){
   initialScreen.style.display = "none";
   gameScreen.style.display = "block";
-  statsScreen.style.display = "none";
 }
 
 function changeToMenuScreen(){
   initialScreen.style.display = "block";
   gameScreen.style.display = "none";
-  statsScreen.style.display = "none";
 }
 
-function changeToStatsScreen(){
-  initialScreen.style.display = "none";
-  gameScreen.style.display = "none";
-  statsScreen.style.display = "block";
-}
 
 
 //GAME DISPLAY FUNCTIONS
@@ -156,6 +130,9 @@ function winGame(){
   //implement something better
   window.alert("You won in " + elapsedSeconds + " seconds");
   localStorage.setItem("wins", parseInt(localStorage.getItem("wins")) + 1);
+  var winTimes = JSON.parse(localStorage.getItem("winTimes"));
+  winTimes.push(elapsedSeconds);
+  localStorage.setItem("winTimes", JSON.stringify(winTimes));
   finalizeGame();
 }
 
@@ -172,18 +149,89 @@ function finalizeGame(){
 
 
 function showStats(){
-  changeToStatsScreen();
-  document.getElementById('stats').innerHTML = "";
-  document.getElementById('stats').innerHTML += "<h2>Total Games: " + localStorage.getItem('totalGames') + "</h2>";
-  document.getElementById('stats').innerHTML += "<h2>    Wins:    " + localStorage.getItem('wins') + "</h2>";
-  document.getElementById('stats').innerHTML += "<h2>   Losses:   " + localStorage.getItem('losses') + "</h2>";
+  document.getElementById('statsModalBody').innerHTML = "";
+  showStat("Wins", localStorage.getItem("wins"));
+  showStat("Losses", localStorage.getItem("losses"));
+  showStat("Total Games", localStorage.getItem("totalGames"));
+  showDistribution();
+}
+
+function showStat(text, value){
+  document.getElementById('statsModalBody').innerHTML += "<div class=\"text-center\"><h4>" + value + "</h4><p>" + text + "</p></div>";
+}
+
+function showDistribution(){
+  var xValues = ["0.5-1", "1-1.5", "1.5-2", "2-2.5", "2.5+"];
+  var yValues = ['0', '0', '0', '0', '0'];
+
+  JSON.parse(localStorage.getItem("winTimes")).forEach(function (item, index) {
+    var bucket = Math.floor(item/30);
+
+    if (bucket > 4){
+      bucket = 4;
+    }
+
+    yValues[bucket]++;
+  });
+
+  var barColors = ["#212529", "#212529", "#212529", "#212529", "#212529"];
+
+  new Chart("myChart", {
+    type: "bar",
+    data: {
+      labels: xValues,
+      datasets: [{
+        backgroundColor: barColors,
+        data: yValues
+      }]
+    },
+    options: {
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Minutes'
+          }
+        }],
+        yAxes: [{
+            ticks: {
+                beginAtZero: true,
+                stepSize: calculateStepSize(Math.max(yValues)),
+                suggestedMax: 5
+            }
+        }]
+      }
+    }
+  });
+}
+
+function calculateStepSize(value){
+  return Math.ceil(value/4);
 }
 
 function clearStats(){
   localStorage.setItem("totalGames", 0);
   localStorage.setItem("wins", 0);
   localStorage.setItem("losses", 0);
+  localStorage.setItem('winTimes', JSON.stringify([]));
   showStats();
+}
+
+function initializeStatistics(){
+  const wins = localStorage.getItem('wins');
+  const losses = localStorage.getItem('losses');
+  const totalGames = localStorage.getItem('totalGames');
+  var winTimes = localStorage.getItem('winTimes')
+
+  if(wins === null || losses === null || totalGames === null || winTimes === null){
+    localStorage.setItem('wins', 0);
+    localStorage.setItem('losses', 0);
+    localStorage.setItem('totalGames', 0);
+    localStorage.setItem('winTimes', JSON.stringify([]));
+  }
 }
 
 
