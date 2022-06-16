@@ -11,9 +11,14 @@ const FLAGGED = 2;
 
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
+const statsScreen = document.getElementById('statsScreen');
 const newGameBtn = document.getElementById('newGameButton');
+const restartBtn = document.getElementById('restartButton');
 const newGameProBtn = document.getElementById('newGameProButton');
+const statsBtn = document.getElementById('statsButton');
+const menuBtn = document.getElementById('menuButton');
 const joinGameBtn = document.getElementById('joinGameButton');
+const clearStatsBtn = document.getElementById('clearStatsButton');
 const timerDisplay = document.getElementById('timerDisplay');
 
 const CANVAS_SIZE = 600;
@@ -25,12 +30,35 @@ gameStarted = false;
 
 
 newGameBtn.addEventListener('click', newGame);
+restartBtn.addEventListener('click', restartGame);
+statsBtn.addEventListener('click', showStats);
+menuBtn.addEventListener('click', changeToMenuScreen);
+clearStatsBtn.addEventListener('click', clearStats);
+
 setUpCanvas();
 
 function newGame() {
   state = init();
   paintCanvas();
   paintGame(state);
+}
+
+function restartGame(){
+  location.reload();
+}
+
+function showStats(){
+  initialScreen.style.display = "none";
+  statsScreen.style.display = "block";
+   document.getElementById('stats').innerHTML = "";
+  document.getElementById('stats').innerHTML += "<h2>Wins: " + localStorage.getItem('wins') + "</h2>";
+  document.getElementById('stats').innerHTML += "<h2>Losses: " + localStorage.getItem('losses') + "</h2>";
+}
+
+function clearStats(){
+  localStorage.setItem("wins", 0);
+  localStorage.setItem("losses", 0);
+  showStats();
 }
 
 
@@ -80,6 +108,14 @@ function init() {
 
   initialState = createInitialGameState();
 
+  const wins = localStorage.getItem('wins');
+  const losses = localStorage.getItem('losses');
+
+  if(wins === null || losses === null){
+    localStorage.setItem('wins', 0);
+    localStorage.setItem('losses', 0);
+  }
+
   return initialState;
 }
 
@@ -106,6 +142,7 @@ function changeToGameScreen(){
 function changeToMenuScreen(){
   initialScreen.style.display = "block";
   gameScreen.style.display = "none";
+  statsScreen.style.display = "none";
 }
 
 function createInitialGameState() {
@@ -331,6 +368,7 @@ function exploreTile(x, y, state){
 function loseGame(){
   gameStarted = false;
   //implement something better
+  localStorage.setItem("losses", parseInt(localStorage.getItem("losses")) + 1);
   window.alert("You lost");
   clearInterval(timer);
   resetTimer(timerDisplay);
@@ -342,6 +380,7 @@ function winGame(){
   gameStarted = false;
   //implement something better
   window.alert("You won in " + elapsedSeconds + " seconds");
+  localStorage.setItem("losses", parseInt(localStorage.getItem("wins")) + 1);
   clearInterval(timer);
   resetTimer(timerDisplay);
   initialScreen.style.display = "block";

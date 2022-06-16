@@ -1,0 +1,21 @@
+body{
+	background-image:url('https://cdn.wallpapersafari.com/38/60/RvLtEc.jpg');
+	background-repeat: no-repeat; 
+	background-size: cover;
+}
+
+.btn{
+	margin: 1rem;
+}
+
+#gameScreen {
+  display: none;
+}
+
+#koubaScreen {
+  display: none;
+}
+
+#statsScreen{
+	display: none;
+}
