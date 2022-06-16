@@ -1,23 +1,9 @@
-body{
-	/*background-repeat: no-repeat; */
-	/*background-size: cover;*/
-
-	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 500% 500%;
-    animation: gradient 15s ease infinite;
+body {
+	background-color: #72A0C1;
 }
 
-@keyframes gradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
+
+
 
 #statsModalBody{
 	width: 100%;
@@ -45,6 +31,11 @@ body{
 	flex-basis: 0;
 }
 
+#settingsModalBody{
+	width:95%;
+	margin: auto;
+}
+
 .btn{
 	margin: 1rem;
 }
@@ -66,5 +57,9 @@ body{
 }
 
 #navbar{
-	border-bottom: 2px solid grey;
+	/*border-bottom: 1px solid white;*/
+}
+
+#newGameButton{
+	width: 50%;
 }

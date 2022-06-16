@@ -10,7 +10,7 @@
 
 
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="icon" type="image/x-icon" href="resources/favicon.ico">
 </head>
 
 <body>
@@ -20,7 +20,9 @@
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="#"></a>
+                    <button class="btn btn-navbar" data-bs-toggle="modal" id="infoButton" data-bs-target="#infoModal">
+                      <img id="settingsIcon" src="resources/info.png" width="30rm" height="30rm"/>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -33,9 +35,11 @@
                     <button class="btn btn-navbar" data-bs-toggle="modal" id="statsButton" data-bs-target="#statsModal" >
                       <img id="statsIcon" src="resources/stats.png" width="30rm" height="30rm"/>
                     </button>
-                    <button class="btn btn-navbar">
+                    <button class="btn btn-navbar" data-bs-toggle="modal" id="settingsButton" data-bs-target="#settingsModal">
                       <img id="settingsIcon" src="resources/settings.png" width="30rm" height="30rm"/>
                     </button>
+
+
                 </li>
             </ul>
         </div>
@@ -49,10 +53,10 @@
         <div class="d-flex flex-column align-items-center justify-content-center h-100">
             <button
               type="submit"
-              class="btn btn-success"
+              class="btn btn-dark btn-lg"
               id="newGameButton"
             >
-              Basic Mode
+              Start Game
             </button>
 
         </div>
@@ -64,14 +68,15 @@
           	<span id="timerDisplay" class="badge badge-secondary">00:00</span>
           </h1>
           <canvas class="canvas" id="canvas"></canvas>
-          <button type="submit" class="btn btn-primary" id="restartButton">New Game</button>
+          <br><br>
+          <button type="submit" class="btn btn-dark" id="restartButton">New Game</button>
         </div>
       </div>
 
       
       </div>
 
-      <!-- Modal -->
+      <!-- Stats Modal -->
 		<div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered">
 		    <div class="modal-content text-center justify-content-center">
@@ -91,6 +96,38 @@
 		      	<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
 		      </div>
 
+		    </div>
+		  </div>
+		</div>
+
+		<!-- Settings Modal -->
+		<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content text-center justify-content-center">
+		      <div class="modal-header border-0">
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div>
+		      	<h2>SETTINGS</h2>
+		      	<br>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+
+		<!-- Info Modal -->
+		<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content text-center justify-content-center">
+		      <div class="modal-header border-0">
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div>
+		      	<h2>Info</h2>
+		      	<br>
+		      	<img src="https://events.naftemporiki.gr/tech2019/Cms_Data/Contents/tech2019/Media/Speakers/koubarakis-tech19.jpg">
+		      </div>
+		      <br>
 		    </div>
 		  </div>
 		</div>
