@@ -4,6 +4,32 @@ body{
 	background-size: cover;
 }
 
+#statsModalBody{
+	width: 100%;
+	margin: auto;
+	display: flex;
+}
+
+#statsModal{
+	text-transform: uppercase;
+}
+
+#distribution{
+	width: 75%;
+	margin: auto;	
+	margin-bottom: 10px;
+}
+
+#logo{
+
+}
+
+#statsModalBody > div{
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0;
+}
+
 .btn{
 	margin: 1rem;
 }
@@ -12,10 +38,14 @@ body{
   display: none;
 }
 
-#koubaScreen {
-  display: none;
-}
-
 #statsScreen{
 	display: none;
+}
+
+#canvas{
+	border-radius: 15px;
+}
+
+#gameScreen{
+	margin-top: 2rem;
 }

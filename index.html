@@ -3,18 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Minesweeper JS</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+	
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Info</a>
+                </li>
+            </ul>
+        </div>
+        <div class="mx-auto order-0">
+            <a class="navbar-brand mx-auto" href="#">Minesweeper</a>
+        </div>
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <button class="btn btn-success" data-bs-toggle="modal" id="statsButton" data-bs-target="#statsModal">Stats</button>
+                    <button class="btn btn-success">Test</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-  <section class="vh-100">
+  <section class="">
     <div class="container h-100">
 
       <div id="initialScreen" class="h-100">
         <div class="d-flex flex-column align-items-center justify-content-center h-100">
-            <h1>Minesweeper</h1>
             <button
               type="submit"
               class="btn btn-success"
@@ -23,20 +50,11 @@
               Basic Mode
             </button>
 
-            <button
-              type="submit"
-              class="btn btn-success"
-              id="statsButton"
-            >
-              Stats
-            </button>
         </div>
       </div>
 
       <div id="gameScreen" class="h-100">
         <div class="d-flex flex-column align-items-center justify-content-center h-100">
-
-          <h1>Minesweeper 20x20 - 30 Mines</h1>
           <h1>
           	<span id="timerDisplay" class="badge badge-secondary">00:00</span>
           </h1>
@@ -45,35 +63,40 @@
         </div>
       </div>
 
-      <div id="statsScreen" class="h-100">
-        <div class="d-flex flex-column align-items-center justify-content-center h-100">
-            <h1>Minesweeper</h1>
-            <hr>
-            <span id="stats">
-            </span>
-
-            <button
-              type="submit"
-              class="btn btn-success"
-              id="menuButton"
-            >
-            Back
-            </button>
-
-            <button
-              type="submit"
-              class="btn btn-success"
-              id="clearStatsButton"
-            >
-            Clear
-            </button>
-
-        </div>
+      
       </div>
+
+      <!-- Modal -->
+		<div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content text-center justify-content-center">
+		      <div class="modal-header border-0">
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div>
+		      	<h2>STATISTICS</h2>
+		      	<br>
+		      </div>
+		      <div id="statsModalBody">
+		       
+		      </div>
+		      <br>
+		      <h5>Win Time Distribution</h5>
+		      <div id="distribution">
+		      	<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+		      </div>
+
+		    </div>
+		  </div>
+		</div>
 
     </div>
   </section>
-  
+
+
+
+
+
   <script src = "main.js"></script>
 </body>
 </html>
