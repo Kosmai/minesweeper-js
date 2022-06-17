@@ -23,6 +23,9 @@
                     <button class="btn btn-navbar" data-bs-toggle="modal" id="infoButton" data-bs-target="#infoModal">
                       <img id="settingsIcon" src="resources/info.png" width="30rm" height="30rm"/>
                     </button>
+                    <button class="btn btn-navbar" data-bs-toggle="modal" id="changelogButton" data-bs-target="#changelogModal">
+                      <img id="changelogIcon" src="resources/changelog.png" width="30rm" height="30rm"/>
+                    </button>
                 </li>
             </ul>
         </div>
@@ -167,6 +170,31 @@
 		    </div>
 		  </div>
 		</div>
+
+    <!-- Changelog Modal -->
+    <div class="modal fade" id="changelogModal" tabindex="-1" aria-labelledby="changelogModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content justify-content-center">
+          <div class="modal-header border-0">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div>
+            <h2 class="text-center">Changelog</h2>
+            <br>
+            <ul class="mx-3">
+              <li><b>v0.4.3</b>  Added this beautiful changelog</li>              
+              <li><b>v0.4.2</b>  Animations - much bug fixing and improvements for mobile</li>
+              <li><b>v0.4.1</b>  Difficulty system, remade base menu screen</li>
+              <li><b>v0.3</b>    Navbar with statistics, settings and info buttons</li>
+              <li><b>v0.2.2</b>  More statistics -</li>
+              <li><b>v0.2.1</b>  Timer and statistics</li>
+              <li><b>v0.1</b>    Basic game functionality</li>
+            </ul>
+          </div>
+          <br>
+        </div>
+      </div>
+    </div>
 
     </div>
   </section>
