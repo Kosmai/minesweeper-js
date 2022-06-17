@@ -48,17 +48,55 @@
 
   <section class="">
     <div class="container h-100">
-
       <div id="initialScreen" class="h-100">
-        <div class="d-flex flex-column align-items-center justify-content-center h-100">
-            <button
-              type="submit"
-              class="btn btn-dark btn-lg"
-              id="newGameButton"
-            >
-              Start Game
-            </button>
 
+        <div class="row" id="difficultySelector">
+          <div class="col-lg-3">
+            <img class="img-fluid" src="resources/easy.png" alt="Generic placeholder image" width="140" height="140">
+            <h2>Easy</h2>
+            <p>If you have never played minesweeper in the past this is the mode for you. Make sure to check out the "How to play" tab</p>
+            <p><a class="btn btn-secondary" href="#" role="button" id="easyButton">Select Easy Mode</a></p>
+          </div>
+          <div class="col-lg-3">
+            <img class="img-fluid" src="resources/normal.png" alt="Generic placeholder image" width="140" height="140">
+            <h2>Normal</h2>
+            <p>So you know the ropes of minesweeper, right? Let's see... If you can solve this in under a minute you got game</p>
+            <p><a class="btn btn-secondary" href="#" role="button" id="normalButton">Select Normal Mode</a></p>
+          </div>
+          <div class="col-lg-3">
+            <img class="img-fluid" src="resources/hard.png" alt="Generic placeholder image" width="140" height="140">
+            <h2>Hard</h2>
+            <p>Someone needs something more like a challenge, huh? I suppose you could try this, but make sure you don't dig your own... mine</p>
+            <p><a class="btn btn-secondary" href="#" role="button" id="hardButton">Select Hard Mode</a></p>
+          </div>
+          <div class="col-lg-3">
+              <img class="img-fluid" src="resources/expert.png" alt="Generic placeholder image" width="140" height="140">
+              <h2>Expert</h2>
+              <p>Ok basically you are way too good... Or so you think. Developer's best score here is 93 seconds. Good luck</p>
+              <p><a class="btn btn-secondary" href="#" role="button" id="expertButton">Select Expert Mode</a></p>
+            </div>
+          </div>
+
+        <div class="row">
+          <div class="col" id="centeredColumn">
+              <button
+                class="btn btn-default"
+                id="difficultyChoice"
+              >
+              <img class="img-fluid" src="resources/speedometer.png" id="speedometer" width="150" height="150">
+              <img class="img-fluid" src="resources/speedometerPointer.png" id="speedometerPointer" width="150" height="150">
+              </button>
+              <h2 id="chosenDifficultyDisplay">Easy</h2> 
+          </div>
+            <div class="col" id="centeredColumn">
+              <button
+                class="btn btn-default"
+                id="newGameButton"
+              >
+              <img class="img-fluid" src="resources/mine1.png" width="150" height="150">
+              </button>
+              <h2 id="playDisplay">Play</h2>
+          </div>
         </div>
       </div>
 

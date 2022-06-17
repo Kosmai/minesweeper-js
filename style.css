@@ -61,5 +61,56 @@ body {
 }
 
 #newGameButton{
-	width: 50%;
+	margin-top: 10rem;
+	border: none;
+	transition: transform 0.4s;
 }
+
+#difficultyChoice{
+	margin-top: 10rem;
+	border: none;
+	 position: relative;
+	  top: 0;
+	  left: 0;
+}
+
+#playDisplay{
+	margin-top: 1rem;
+}
+
+#chosenDifficultyDisplay{
+	margin-top: 1rem;
+}
+
+#newGameButton:hover{
+	transform: scale(1.5);
+}
+
+#centeredColumn{
+	text-align: center;
+}
+
+
+#difficultySelector{
+	margin-top: 5rem;
+}
+
+#speedometer {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+#speedometerPointer {
+  position: absolute;
+  top: 15px;
+  left: 10px;
+}
+
+@keyframes easyToNormal { from {} to { transform:rotate(134deg); } }
+@keyframes easyToHard { from {} to { transform:rotate(260deg); } }
+@keyframes normalToHard { from {transform:rotate(134deg);} to { transform:rotate(260deg); } }
+@keyframes normalToEasy { from {transform:rotate(134deg);} to {} }
+@keyframes hardToNormal { from {transform:rotate(260deg);} to {transform:rotate(134deg);} }
+@keyframes hardToEasy { from {transform:rotate(260deg);} to {} }
+

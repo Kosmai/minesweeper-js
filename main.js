@@ -3,11 +3,17 @@ const MINE_COLOR = '#e66916';
 const FLAG_COLOR = '#c2c2c2';
 const TILE_COLORS = ['#e4e4e4','#f2f94f','#7df94f','#3cf9f2','#f8ad2c','#1928ff','#12ff6f','#fc12ff','#ff0000'];
 
-const LEFT_CLICK = 1;
+const LEFT_CLICK  = 1;
 const RIGHT_CLICK = 3;
-const UNEXPLORED = 0;
-const EXPLORED = 1;
-const FLAGGED = 2;
+
+const UNEXPLORED  = 0;
+const EXPLORED    = 1;
+const FLAGGED     = 2;
+
+const EASY   = 0;
+const NORMAL = 1;
+const HARD   = 2;
+const EXPERT = 3;
 
 //html handles
 const gameScreen = document.getElementById('gameScreen');
@@ -18,27 +24,45 @@ const newGameProBtn = document.getElementById('newGameProButton');
 const statsBtn = document.getElementById('statsButton');
 const joinGameBtn = document.getElementById('joinGameButton');
 const timerDisplay = document.getElementById('timerDisplay');
+const speedometer = document.getElementById('speedometer');
+const speedometerPointer = document.getElementById('speedometerPointer');
+const easyBtn = document.getElementById('easyButton');
+const normalBtn = document.getElementById('normalButton');
+const hardBtn = document.getElementById('hardButton');
+const expertBtn = document.getElementById('expertButton');
+const chosenDifficultyDisplay = document.getElementById('chosenDifficultyDisplay');
 
 //Those will change based on difficulty
-const CANVAS_SIZE = 600;
-const GRID_SIZE = 20;
-const NUM_OF_MINES = 30;
+let CANVAS_SIZE;
+let GRID_SIZE;
+let NUM_OF_MINES;
 
 //globals
 let canvas, ctx, timer, state, elapsedSeconds;
+let difficulty = EASY;
 let gameStarted = false;
 
 //event listeners
 newGameBtn.addEventListener('click', newGame);
 restartBtn.addEventListener('click', restartGame);
-statsBtn.addEventListener('click', showStats)
+statsBtn.addEventListener('click', showStats);
+easyBtn.addEventListener('click',   function(){setDifficulty(EASY);}, false);
+normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
+hardBtn.addEventListener('click',   function(){setDifficulty(HARD);}, false);
+expertBtn.addEventListener('click', function(){setDifficulty(EXPERT);}, false);
 
-setUpCanvas();
+
+//KNOWN BUG - SET UP CANVAS MUST BE RUN ONCE, BUT MUST CHANGE ACCORDING TO LEVEL CHOSEN...
+//NOW IT CALLS MULTIPLE EVENT HANDLERS CAUSING FLAGS TO BE UNPLACABLE SOMETIMES (EVERY 2 GAMES)
+
+
 initializeStatistics();
+setDifficulty(EASY);
 
 
 function newGame() {
   state = beginGame();
+  setUpCanvas();
   paintCanvas();
   paintGame(state);
 }
@@ -51,8 +75,100 @@ function beginGame() {
   return initialState;
 }
 
-function restartGame(){
-  location.reload();
+
+//DIFFICULTY FUNCTIONS
+
+
+function setDifficulty(level){
+
+  switch(level){
+    case EASY:
+      chosenDifficultyDisplay.innerHTML = "Easy";
+      setGridSize(10);
+      setMineAmount(10);
+      break;
+    case NORMAL:
+      chosenDifficultyDisplay.innerHTML = "Normal";
+      setGridSize(16);
+      setMineAmount(25);
+      break;
+    case HARD:
+      chosenDifficultyDisplay.innerHTML = "Hard";
+      setGridSize(20);
+      setMineAmount(40);
+      break;
+    case EXPERT:
+      chosenDifficultyDisplay.innerHTML = "Expert";
+      setGridSize(30);
+      setMineAmount(90);
+      break;
+    default:
+      chosenDifficultyDisplay.innerHTML = "Easy";
+      difficulty = EASY;
+      setGridSize(10);
+      setMineAmount(10);
+      break;
+  }
+  setSpeedometer(level);
+  difficulty = level;
+  return;
+}
+
+function setGridSize(size){
+  GRID_SIZE = size;
+  CANVAS_SIZE = size*30;
+}
+
+function setMineAmount(amount){
+  NUM_OF_MINES = amount;
+}
+
+function setSpeedometer(level){
+  if(level == EXPERT){
+    speedometer.src = "resources/expert.png";
+    speedometerPointer.style.display = "none";
+  }
+  var animation = "";
+  switch(difficulty){
+    case EASY:
+      if(level == NORMAL){
+        animation = "easyToNormal";
+      }
+      else if(level == HARD){
+        animation = "easyToHard";
+      }
+      break;
+    case NORMAL:
+      if(level == EASY){
+        animation = "normalToEasy";
+      }
+      else if(level == HARD){
+        animation = "normalToHard";
+      }
+      break;
+    case HARD:
+      if(level == EASY){
+        animation = "hardToEasy";
+      }
+      else if(level == NORMAL){
+        animation = "hardToNormal";
+      }
+      break;
+    case EXPERT:
+        speedometer.src = "resources/speedometer.png";
+        speedometerPointer.style.display = "block";
+      if(level == NORMAL){
+        animation = "easyToNormal";
+      }
+      else if(level == HARD){
+        animation = "easyToHard";
+      }
+      break;
+    default:
+      return;
+  }
+
+  speedometerPointer.style.animation = animation + " 0.5s ease-out forwards";
 }
 
 
@@ -118,6 +234,9 @@ function paintGame(state) {
 
 //EVENT HANDLING FUNCTIONS
 
+function restartGame(){
+  finalizeGame();
+}
 
 function loseGame(){
   //implement something better
