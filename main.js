@@ -124,6 +124,10 @@ function setMineAmount(amount){
 }
 
 function setSpeedometer(level){
+  if(level == difficulty){
+    return;
+  }
+
   if(level == EXPERT){
     speedometer.src = "resources/expert.png";
     speedometerPointer.style.display = "none";
