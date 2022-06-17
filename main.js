@@ -48,7 +48,7 @@ let statsMode = 0;
 
 var onlongtouch; 
 var touchTimer;
-var touchduration = 500; //length of time we want the user to touch before we do something
+var touchduration = 250; //length of time we want the user to touch before we do something
 var touchDown = false;
 var touchDownEvent;
 
