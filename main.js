@@ -136,17 +136,17 @@ function setDifficulty(level){
     case NORMAL:
       chosenDifficultyDisplay.innerHTML = "Normal";
       setGridSize(16);
-      setMineAmount(25);
+      setMineAmount(40);
       break;
     case HARD:
       chosenDifficultyDisplay.innerHTML = "Hard";
       setGridSize(20);
-      setMineAmount(40);
+      setMineAmount(80);
       break;
     case EXPERT:
       chosenDifficultyDisplay.innerHTML = "Expert";
-      setGridSize(30);
-      setMineAmount(90);
+      setGridSize(22);
+      setMineAmount(100);
       break;
     default:
       chosenDifficultyDisplay.innerHTML = "Easy";
