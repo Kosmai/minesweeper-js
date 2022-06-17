@@ -272,11 +272,22 @@ function finalizeGame(){
 
 
 function showStats(){
-  document.getElementById('statsModalBody').innerHTML = "";
+  document.getElementById("statsModalBody").innerHTML = "";
   showStat("Wins", localStorage.getItem("wins"));
   showStat("Losses", localStorage.getItem("losses"));
   showStat("Total Games", localStorage.getItem("totalGames"));
-  showDistribution();
+  const winTimes = JSON.parse(localStorage.getItem("winTimes"));
+
+  if(winTimes.length > 0){
+    showStat("Best Time (sec)", Math.min.apply(Math,winTimes));
+    document.getElementById("distributionBody");
+    distributionBody.innerHTML = String.raw`<br> 
+    <h5>Win Time Distribution</h5> 
+    <div id="distribution"> 
+    <canvas id="myChart" style="width:100%;max-width:700px"></canvas></div>`
+    showDistribution();
+  }
+
 }
 
 function showStat(text, value){

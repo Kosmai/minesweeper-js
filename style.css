@@ -86,13 +86,14 @@ body {
 	transform: scale(1.5);
 }
 
-#centeredColumn{
-	text-align: center;
+#difficultySelector{
+	margin-top: 2rem;
+	padding: 0.2rem;
+	border-radius: 15px;
 }
 
-
-#difficultySelector{
-	margin-top: 5rem;
+#difficultySelector > div{
+	padding: 2rem;
 }
 
 #speedometer {
