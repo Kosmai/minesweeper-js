@@ -26,7 +26,7 @@
                 </li>
             </ul>
         </div>
-        <div class="mx-auto order-0">
+        <div class="mx-auto order-0"  id="logo">
             <h1 class="text-light">Minesweeper</h1>
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
@@ -50,47 +50,47 @@
     <div class="container h-100">
       <div id="initialScreen" class="h-100">
 
-        <div class="row" id="difficultySelector">
-          <div class="col-lg-3">
+        <div class="d-sm-flex justify-content-center bg-dark" id="difficultySelector">
+          <div class="text-center" >
             <img class="img-fluid" src="resources/easy.png" alt="Generic placeholder image" width="140" height="140">
-            <h2>Easy</h2>
-            <p>If you have never played minesweeper in the past this is the mode for you. Make sure to check out the "How to play" tab</p>
-            <p><a class="btn btn-secondary" href="#" role="button" id="easyButton">Select Easy Mode</a></p>
+            <h2 class="text-light">Easy</h2>
+            <p class="text-light">If you have never played minesweeper in the past this is the mode for you. Make sure to check out the "How to play" tab</p>
+            <p><a class="btn  btn-outline-light" role="button" id="easyButton">Select Easy Mode</a></p>
           </div>
-          <div class="col-lg-3">
+          <div class="text-center">
             <img class="img-fluid" src="resources/normal.png" alt="Generic placeholder image" width="140" height="140">
-            <h2>Normal</h2>
-            <p>So you know the ropes of minesweeper, right? Let's see... If you can solve this in under a minute you got game</p>
-            <p><a class="btn btn-secondary" href="#" role="button" id="normalButton">Select Normal Mode</a></p>
+            <h2 class="text-light">Normal</h2>
+            <p class="text-light">So you know the ropes of minesweeper, right? Let's see... If you can solve this in under a minute you got game</p>
+            <p><a class="btn btn-outline-light" role="button" id="normalButton">Select Normal Mode</a></p>
           </div>
-          <div class="col-lg-3">
+          <div class="text-center">
             <img class="img-fluid" src="resources/hard.png" alt="Generic placeholder image" width="140" height="140">
-            <h2>Hard</h2>
-            <p>Someone needs something more like a challenge, huh? I suppose you could try this, but make sure you don't dig your own... mine</p>
-            <p><a class="btn btn-secondary" href="#" role="button" id="hardButton">Select Hard Mode</a></p>
+            <h2 class="text-light">Hard</h2>
+            <p class="text-light">Someone needs something more like a challenge, huh? I suppose you could try this, but make sure you don't dig your own... mine</p>
+            <p><a class="btn  btn-outline-light" role="button" id="hardButton">Select Hard Mode</a></p>
           </div>
-          <div class="col-lg-3">
+          <div class="text-center">
               <img class="img-fluid" src="resources/expert.png" alt="Generic placeholder image" width="140" height="140">
-              <h2>Expert</h2>
-              <p>Ok basically you are way too good... Or so you think. Developer's best score here is 93 seconds. Good luck</p>
-              <p><a class="btn btn-secondary" href="#" role="button" id="expertButton">Select Expert Mode</a></p>
+              <h2 class="text-light">Expert</h2>
+              <p class="text-light">Ok basically you are way too good... Or so you think. Developer's best score here is 93 seconds. Good luck</p>
+              <p><a class="btn  btn-outline-light" role="button" id="expertButton">Select Expert Mode</a></p>
             </div>
           </div>
 
-        <div class="row">
-          <div class="col" id="centeredColumn">
+        <div class="d-flex justify-content-around mt-5">
+          <div class="text-center mt-0">
               <button
-                class="btn btn-default"
+                class="btn btn-default mt-0"
                 id="difficultyChoice"
               >
-              <img class="img-fluid" src="resources/speedometer.png" id="speedometer" width="150" height="150">
-              <img class="img-fluid" src="resources/speedometerPointer.png" id="speedometerPointer" width="150" height="150">
+              <img class="img-fluid mt-0" src="resources/speedometer.png" id="speedometer" width="150" height="150">
+              <img class="img-fluid mt-0" src="resources/speedometerPointer.png" id="speedometerPointer" width="150" height="150">
               </button>
               <h2 id="chosenDifficultyDisplay">Easy</h2> 
           </div>
-            <div class="col" id="centeredColumn">
+            <div class="text-center mt-0">
               <button
-                class="btn btn-default"
+                class="btn btn-default mt-0"
                 id="newGameButton"
               >
               <img class="img-fluid" src="resources/mine1.png" width="150" height="150">
@@ -128,10 +128,8 @@
 		      <div id="statsModalBody">
 		       
 		      </div>
-		      <br>
-		      <h5>Win Time Distribution</h5>
-		      <div id="distribution">
-		      	<canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+		      <div id="distributionBody">
+
 		      </div>
 
 		    </div>
