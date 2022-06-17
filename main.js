@@ -46,6 +46,12 @@ let difficulty = EASY;
 let gameStarted = false;
 let statsMode = 0;
 
+var onlongtouch; 
+var touchTimer;
+var touchduration = 500; //length of time we want the user to touch before we do something
+var touchDown = false;
+var touchDownEvent;
+
 //event listeners
 newGameBtn.addEventListener('click', newGame);
 restartBtn.addEventListener('click', winGame);
@@ -62,6 +68,43 @@ expertBtn.addEventListener('click', function(){setDifficulty(EXPERT);}, false);
 initializeStatistics();
 setDifficulty(EASY);
 
+function touchstart(e, canvas, tileSize) {
+    touchDown = true;
+    e.preventDefault();
+    touchDownEvent = e;
+    if (!touchTimer) {
+        touchTimer = setTimeout(function(){onlongtouch(e, canvas, tileSize);}, touchduration);   
+    }
+}
+
+function touchend(e, canvas, tileSize) {
+    //stops short touches from firing the event
+    if (touchTimer) {
+        clearTimeout(touchTimer);
+        touchTimer = null;
+
+    }
+
+    if(touchDown){
+      const event = touchDownEvent.touches[0]
+      const rect = canvas.getBoundingClientRect();
+      const x = event.pageX - rect.left;
+      const y = event.pageY - rect.top;
+      handleCanvasLeftClick(x, y, tileSize);
+    }
+}
+
+onlongtouch = function(e, canvas, tileSize) { 
+    touchDown = false;
+    timer = null;
+
+    const event = e.touches[0]
+    const rect = canvas.getBoundingClientRect();
+    const x = event.pageX - rect.left;
+    const y = event.pageY - rect.top;
+
+    handleCanvasRightClick(x, y, tileSize);
+};
 
 function newGame() {
   state = beginGame();
@@ -722,14 +765,19 @@ function setUpCanvas(){
 
   canvas.addEventListener('contextmenu', event => event.preventDefault());
   canvas.addEventListener('mousedown', function(e) {
-  getCursorPosition(canvas, e, tileSize)})
+  getCursorPosition(canvas, e, tileSize);});
+  canvas.addEventListener("touchstart", function(e){
+    touchstart(e, canvas, tileSize);
+  });
+  canvas.addEventListener("touchend", function(e){
+    touchend(e, canvas, tileSize);});
 }
 
 
-function getCursorPosition(canvas, event, tilesize) {
-  const rect = canvas.getBoundingClientRect()
-  const x = event.clientX - rect.left
-  const y = event.clientY - rect.top
+function getCursorPosition(canvas, event, tilesize, mobile = false) {
+  const rect = canvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
 
   if(event.which == LEFT_CLICK){
     handleCanvasLeftClick(x, y, tilesize);
