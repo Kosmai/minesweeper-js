@@ -118,7 +118,7 @@
       </div>
 
       <!-- Stats Modal -->
-		<div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+		<div class="modal modal-lg  fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered">
 		    <div class="modal-content text-center justify-content-center">
 		      <div class="modal-header border-0">
@@ -127,6 +127,13 @@
 		      <div>
 		      	<h2>STATISTICS</h2>
 		      	<br>
+		      </div>
+		      <div id="statsModeButtons" class="d-sm-flex justify-content-center">
+		      	<div class="statsModeButtonDiv"><button onclick="setStatsMode(0)" class="btn btn-outline-dark text-center" role="button" >Easy</button></div>
+		      	<div class="statsModeButtonDiv"><button onclick="setStatsMode(1)" class="btn btn-outline-dark" role="button" >Normal</button></div>
+		      	<div class="statsModeButtonDiv"><button onclick="setStatsMode(2)" class="btn btn-outline-dark" role="button" >Hard</button></div>
+		      	<div class="statsModeButtonDiv"><button onclick="setStatsMode(3)" class="btn btn-outline-dark" role="button" >Extreme</button></div>
+		      	<div class="statsModeButtonDiv"><button onclick="setStatsMode(4)" class="btn btn-outline-dark" role="button" >Total</button></div>
 		      </div>
 		      <div id="statsModalBody">
 		       
@@ -182,6 +189,7 @@
             <h2 class="text-center">Changelog</h2>
             <br>
             <ul class="mx-3">
+              <li><b>v0.5</b>    Statistics support difficulties and major bug fixes</li>
               <li><b>v0.4.3</b>  Added this beautiful changelog</li>              
               <li><b>v0.4.2</b>  Animations - much bug fixing and improvements for mobile</li>
               <li><b>v0.4.1</b>  Difficulty system, remade base menu screen</li>

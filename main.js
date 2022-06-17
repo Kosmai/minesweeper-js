@@ -15,6 +15,7 @@ const NORMAL = 1;
 const HARD   = 2;
 const EXPERT = 3;
 
+
 //html handles
 const gameScreen = document.getElementById('gameScreen');
 const initialScreen = document.getElementById('initialScreen');
@@ -32,25 +33,27 @@ const hardBtn = document.getElementById('hardButton');
 const expertBtn = document.getElementById('expertButton');
 const chosenDifficultyDisplay = document.getElementById('chosenDifficultyDisplay');
 
+
 //Those will change based on difficulty
 let CANVAS_SIZE;
 let GRID_SIZE;
 let NUM_OF_MINES;
 
+
 //globals
 let canvas, ctx, timer, state, elapsedSeconds;
 let difficulty = EASY;
 let gameStarted = false;
+let statsMode = 0;
 
 //event listeners
 newGameBtn.addEventListener('click', newGame);
-restartBtn.addEventListener('click', restartGame);
+restartBtn.addEventListener('click', winGame);
 statsBtn.addEventListener('click', showStats);
 easyBtn.addEventListener('click',   function(){setDifficulty(EASY);}, false);
 normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
 hardBtn.addEventListener('click',   function(){setDifficulty(HARD);}, false);
 expertBtn.addEventListener('click', function(){setDifficulty(EXPERT);}, false);
-
 
 //KNOWN BUG - SET UP CANVAS MUST BE RUN ONCE, BUT MUST CHANGE ACCORDING TO LEVEL CHOSEN...
 //NOW IT CALLS MULTIPLE EVENT HANDLERS CAUSING FLAGS TO BE UNPLACABLE SOMETIMES (EVERY 2 GAMES)
@@ -245,23 +248,27 @@ function restartGame(){
 function loseGame(){
   //implement something better
   window.alert("You lost");
-  localStorage.setItem("losses", parseInt(localStorage.getItem("losses")) + 1);
+  var stats = JSON.parse(localStorage.getItem("stats"));
+  stats[difficulty]["losses"] += 1;
+  localStorage.setItem("stats", JSON.stringify(stats));
   finalizeGame();
 }
 
 function winGame(){
   //implement something better
   window.alert("You won in " + elapsedSeconds + " seconds");
-  localStorage.setItem("wins", parseInt(localStorage.getItem("wins")) + 1);
-  var winTimes = JSON.parse(localStorage.getItem("winTimes"));
-  winTimes.push(elapsedSeconds);
-  localStorage.setItem("winTimes", JSON.stringify(winTimes));
+  var stats = JSON.parse(localStorage.getItem("stats"));
+  stats[difficulty]["wins"] += 1;
+  stats[difficulty]["winTimes"].push(elapsedSeconds);
+  localStorage.setItem("stats", JSON.stringify(stats));
   finalizeGame();
 }
 
 function finalizeGame(){
   gameStarted = false;
-  localStorage.setItem("totalGames", parseInt(localStorage.getItem("totalGames")) + 1);
+  var stats = JSON.parse(localStorage.getItem("stats"));
+  stats[difficulty]["totalGames"] += 1;
+  localStorage.setItem("stats", JSON.stringify(stats));
   clearInterval(timer);
   resetTimerDisplay(timerDisplay);
   changeToMenuScreen();
@@ -270,23 +277,49 @@ function finalizeGame(){
 
 //STATS FUNCTIONS
 
-
 function showStats(){
-  document.getElementById("statsModalBody").innerHTML = "";
-  showStat("Wins", localStorage.getItem("wins"));
-  showStat("Losses", localStorage.getItem("losses"));
-  showStat("Total Games", localStorage.getItem("totalGames"));
-  const winTimes = JSON.parse(localStorage.getItem("winTimes"));
+  document.getElementById("stats");
 
-  if(winTimes.length > 0){
-    showStat("Best Time (sec)", Math.min.apply(Math,winTimes));
-    document.getElementById("distributionBody");
-    distributionBody.innerHTML = String.raw`<br> 
-    <h5>Win Time Distribution</h5> 
-    <div id="distribution"> 
-    <canvas id="myChart" style="width:100%;max-width:700px"></canvas></div>`
-    showDistribution();
+  var stats = JSON.parse(localStorage.getItem("stats"));
+
+  var mode = statsMode;
+
+  var wins;
+  var losses;
+  var totalGames;
+  var winTimes = [];
+
+  if(mode != 4){
+    wins = stats[mode]["wins"];
+    losses = stats[mode]["losses"];
+    totalGames = stats[mode]["totalGames"];
+    winTimes = stats[mode]["winTimes"];
+  }else{
+    wins = 0;
+    losses = 0;
+    totalGames = 0;
+    for (var key in stats){
+      wins += stats[key]["wins"];
+      losses += stats[key]["losses"];
+      totalGames += stats[key]["totalGames"];
+      winTimes = [...winTimes, ...stats[key]["winTimes"]];
+    }
+
   }
+
+  document.getElementById("statsModalBody").innerHTML = "";
+  showStat("Wins", wins);
+  showStat("Losses", losses);
+  showStat("Total Games", totalGames);
+
+
+  document.getElementById("distributionBody");
+  distributionBody.innerHTML = String.raw`<br> 
+  <h5>Win Time Distribution</h5> 
+  <div id="distribution"> 
+  <canvas id="myChart" style="width:100%;max-width:700px"></canvas></div>`
+  showDistribution(winTimes);
+
 
 }
 
@@ -294,11 +327,11 @@ function showStat(text, value){
   document.getElementById('statsModalBody').innerHTML += "<div class=\"text-center\"><h4>" + value + "</h4><p>" + text + "</p></div>";
 }
 
-function showDistribution(){
+function showDistribution(winTimes){
   var xValues = ["0.5-1", "1-1.5", "1.5-2", "2-2.5", "2.5+"];
-  var yValues = ['0', '0', '0', '0', '0'];
+  var yValues = [0, 0, 0, 0, 0];
 
-  JSON.parse(localStorage.getItem("winTimes")).forEach(function (item, index) {
+  winTimes.forEach(function (item, index) {
     var bucket = Math.floor(item/30);
 
     if (bucket > 4){
@@ -309,7 +342,6 @@ function showDistribution(){
   });
 
   var barColors = ["#212529", "#212529", "#212529", "#212529", "#212529"];
-
   new Chart("myChart", {
     type: "bar",
     data: {
@@ -333,7 +365,7 @@ function showDistribution(){
         yAxes: [{
             ticks: {
                 beginAtZero: true,
-                stepSize: calculateStepSize(Math.max(yValues)),
+                stepSize: calculateStepSize(Math.max.apply(Math, yValues)),
                 suggestedMax: 5
             }
         }]
@@ -343,29 +375,51 @@ function showDistribution(){
 }
 
 function calculateStepSize(value){
+  if(value === NaN || value == 0){
+    return 1;  
+  }
   return Math.ceil(value/4);
 }
 
-function clearStats(){
-  localStorage.setItem("totalGames", 0);
-  localStorage.setItem("wins", 0);
-  localStorage.setItem("losses", 0);
-  localStorage.setItem('winTimes', JSON.stringify([]));
-  showStats();
+function initializeStatistics(){
+  var stats = localStorage.getItem("stats");
+
+  if (stats === null){
+      stats = {
+        0 : {
+          "totalGames" : 0,
+          "wins" : 0,
+          "losses" : 0,
+          "winTimes" : []
+        },
+        1:{
+          "totalGames" : 0,
+          "wins" : 0,
+          "losses" : 0,
+          "winTimes" : []
+        },
+        2:{
+          "totalGames" : 0,
+          "wins" : 0,
+          "losses" : 0,
+          "winTimes" : []
+        },
+        3:{
+          "totalGames" : 0,
+          "wins" : 0,
+          "losses" : 0,
+          "winTimes" : []
+        }
+    }
+
+    localStorage.setItem("stats", JSON.stringify(stats));
+  }
+
 }
 
-function initializeStatistics(){
-  const wins = localStorage.getItem('wins');
-  const losses = localStorage.getItem('losses');
-  const totalGames = localStorage.getItem('totalGames');
-  var winTimes = localStorage.getItem('winTimes')
-
-  if(wins === null || losses === null || totalGames === null || winTimes === null){
-    localStorage.setItem('wins', 0);
-    localStorage.setItem('losses', 0);
-    localStorage.setItem('totalGames', 0);
-    localStorage.setItem('winTimes', JSON.stringify([]));
-  }
+function setStatsMode(value){
+  statsMode = value;
+  showStats();
 }
 
 
@@ -658,6 +712,13 @@ function setUpCanvas(){
 
   ctx.fillStyle = BG_COLOUR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  var newCanvas = canvas.cloneNode(true);
+
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+
+  canvas = newCanvas;
+  ctx = canvas.getContext("2d");
 
   canvas.addEventListener('contextmenu', event => event.preventDefault());
   canvas.addEventListener('mousedown', function(e) {

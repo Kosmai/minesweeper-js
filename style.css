@@ -115,3 +115,15 @@ body {
 @keyframes hardToNormal { from {transform:rotate(260deg);} to {transform:rotate(134deg);} }
 @keyframes hardToEasy { from {transform:rotate(260deg);} to {} }
 
+
+.statsModeButtonDiv {
+	flex-grow: 1;
+  flex-basis: 0;
+  min-width: 0;
+  margin: 0.5rem;
+}
+
+.statsModeButtonDiv > button{
+	width: 90%;
+	margin: auto;
+}
