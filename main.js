@@ -162,7 +162,7 @@ function setDifficulty(level){
 
 function setGridSize(size){
   GRID_SIZE = size;
-  CANVAS_SIZE = size*(330/size);
+  CANVAS_SIZE = size*30;
 }
 
 function setMineAmount(amount){
