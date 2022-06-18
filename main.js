@@ -357,10 +357,6 @@ function showStats(){
 
 
   document.getElementById("distributionBody");
-  distributionBody.innerHTML = String.raw`<br> 
-  <h5>Win Time Distribution</h5> 
-  <div id="distribution"> 
-  <canvas id="myChart" style="width:100%;max-width:700px"></canvas></div>`
   showDistribution(winTimes);
 
 
@@ -371,7 +367,7 @@ function showStat(text, value){
 }
 
 function showDistribution(winTimes){
-  var xValues = ["0.5-1", "1-1.5", "1.5-2", "2-2.5", "2.5+"];
+  var xValues = ["0-0.5", "0.5-1", "1-1.5", "1.5-2", "2+"];
   var yValues = [0, 0, 0, 0, 0];
 
   winTimes.forEach(function (item, index) {
@@ -385,7 +381,14 @@ function showDistribution(winTimes){
   });
 
   var barColors = ["#212529", "#212529", "#212529", "#212529", "#212529"];
-  new Chart("myChart", {
+  
+  const oldChart = Chart.getChart("timeDistributionChart");
+
+  if(oldChart !== undefined){
+    oldChart.destroy();
+  }
+
+  new Chart("timeDistributionChart", {
     type: "bar",
     data: {
       labels: xValues,
@@ -395,23 +398,25 @@ function showDistribution(winTimes){
       }]
     },
     options: {
-      legend: {
-        display: false
+      plugins: {
+          legend: {
+              display: false
+          }
       },
       scales: {
-        xAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: 'Minutes'
+        y:{
+          suggestedMax: 5,
+          ticks:{
+            stepSize: calculateStepSize(Math.max.apply(Math, yValues)),
+            beginAtZero: true,
           }
-        }],
-        yAxes: [{
-            ticks: {
-                beginAtZero: true,
-                stepSize: calculateStepSize(Math.max.apply(Math, yValues)),
-                suggestedMax: 5
-            }
-        }]
+        },
+        x:{
+          title: {
+            display: true,
+            text: "Minutes"
+          }
+        }
       }
     }
   });
