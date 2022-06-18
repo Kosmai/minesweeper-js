@@ -17,8 +17,11 @@
 	
 <nav class="navbar navbar-expand-md navbar-dark bg-dark" id="navbar">
     <div class="container-fluid">
+	    <button class="navbar-toggler w-100 order-1 order-md-0" type="button" data-bs-toggle="collapse" data-bs-target=".collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
         <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav me-auto justify-content-center text-center">
                 <li class="nav-item active">
                     <button class="btn btn-navbar" data-bs-toggle="modal" id="infoButton" data-bs-target="#infoModal">
                       <img id="settingsIcon" src="resources/info.png" width="30rm" height="30rm"/>
@@ -33,7 +36,7 @@
             <h1 class="text-light">Minesweeper</h1>
         </div>
         <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto justify-content-center text-center">
                 <li class="nav-item">
                     <button class="btn btn-navbar" data-bs-toggle="modal" id="statsButton" data-bs-target="#statsModal" >
                       <img id="statsIcon" src="resources/stats.png" width="30rm" height="30rm"/>
@@ -41,8 +44,6 @@
                     <button class="btn btn-navbar" data-bs-toggle="modal" id="settingsButton" data-bs-target="#settingsModal">
                       <img id="settingsIcon" src="resources/settings.png" width="30rm" height="30rm"/>
                     </button>
-
-
                 </li>
             </ul>
         </div>
@@ -195,6 +196,7 @@
             <h2 class="text-center">Changelog</h2>
             <br>
             <ul class="mx-3">
+              <li><b>v0.5.3</b>  Added Hamburger Menu</li>	            	
               <li><b>v0.5.2</b>  Bug fixes in statistics</li>	
               <li><b>v0.5.1</b>  Added longtouch support - Game is now playable on mobile devices</li>	
               <li><b>v0.5.0</b>  Statistics support difficulties and major bug fixes</li>
