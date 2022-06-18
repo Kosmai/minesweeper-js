@@ -45,7 +45,7 @@ let canvas, ctx, timer, state, elapsedSeconds;
 let difficulty = EASY;
 let gameStarted = false;
 let statsMode = 0;
-let debugMode = true;
+let debugMode = false;
 
 var onlongtouch; 
 var touchTimer;
@@ -55,7 +55,7 @@ var touchDownEvent;
 
 //event listeners
 newGameBtn.addEventListener('click', newGame);
-restartBtn.addEventListener('click', winGame);
+restartBtn.addEventListener('click', finalizeGame);
 statsBtn.addEventListener('click', showStats);
 easyBtn.addEventListener('click',   function(){setDifficulty(EASY);}, false);
 normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
@@ -361,8 +361,6 @@ function showStats(){
 
   document.getElementById("distributionBody");
   showDistribution(winTimes);
-
-
 }
 
 function showStat(text, value){
