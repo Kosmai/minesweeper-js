@@ -31,7 +31,10 @@ const easyBtn = document.getElementById('easyButton');
 const normalBtn = document.getElementById('normalButton');
 const hardBtn = document.getElementById('hardButton');
 const expertBtn = document.getElementById('expertButton');
+const exportToClipboardBtn = document.getElementById('exportToClipboardButton');
 const chosenDifficultyDisplay = document.getElementById('chosenDifficultyDisplay');
+const winMessage = document.getElementById('winMessage');
+const loseMessage = document.getElementById('loseMessage');
 
 
 //Those will change based on difficulty
@@ -61,6 +64,7 @@ easyBtn.addEventListener('click',   function(){setDifficulty(EASY);}, false);
 normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
 hardBtn.addEventListener('click',   function(){setDifficulty(HARD);}, false);
 expertBtn.addEventListener('click', function(){setDifficulty(EXPERT);}, false);
+exportToClipboardBtn.addEventListener('click', copyCanvasToClipboard);
 
 //KNOWN BUG - SET UP CANVAS MUST BE RUN ONCE, BUT MUST CHANGE ACCORDING TO LEVEL CHOSEN...
 //NOW IT CALLS MULTIPLE EVENT HANDLERS CAUSING FLAGS TO BE UNPLACABLE SOMETIMES (EVERY 2 GAMES)
@@ -293,24 +297,31 @@ function restartGame(){
 
 function loseGame(){
   //implement something better
-  window.alert("You lost");
+  // window.alert("You lost");
+  clearInterval(timer);
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["losses"] += 1;
   localStorage.setItem("stats", JSON.stringify(stats));
-  finalizeGame();
+  loseMessage.innerHTML = "You lost!";
+  exportToClipboardBtn.style.display = "inline-block";
+  // finalizeGame();
 }
 
 function winGame(){
   //implement something better
-  window.alert("You won in " + elapsedSeconds + " seconds");
+  // window.alert("You won in " + elapsedSeconds + " seconds");
+  clearInterval(timer);
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["wins"] += 1;
   stats[difficulty]["winTimes"].push(elapsedSeconds);
   localStorage.setItem("stats", JSON.stringify(stats));
-  finalizeGame();
+  winMessage.innerHTML = "You won in " + elapsedSeconds + " seconds!";
+  exportToClipboardBtn.style.display = "inline-block";
+  // finalizeGame();
 }
 
 function finalizeGame(){
+  exportToClipboardBtn.style.display = "none";
   gameStarted = false;
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["totalGames"] += 1;
@@ -786,6 +797,21 @@ function paintCanvas(){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   const gridsize = state.gridsize;
   const tileSize = canvas.width / gridsize;
+}
+
+function copyCanvasToClipboard(){
+  canvas.toBlob(blob => {
+    try{
+      navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob
+        })
+      ]);
+      console.log('Canvas copied.');
+    } catch(err) {
+      console.error(err.name, err.message);
+    }
+  });
 }
 
 //UTILS
