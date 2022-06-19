@@ -45,6 +45,7 @@ let canvas, ctx, timer, state, elapsedSeconds;
 let difficulty = EASY;
 let gameStarted = false;
 let statsMode = 0;
+let debugMode = false;
 
 var onlongtouch; 
 var touchTimer;
@@ -54,7 +55,7 @@ var touchDownEvent;
 
 //event listeners
 newGameBtn.addEventListener('click', newGame);
-restartBtn.addEventListener('click', winGame);
+restartBtn.addEventListener('click', finalizeGame);
 statsBtn.addEventListener('click', showStats);
 easyBtn.addEventListener('click',   function(){setDifficulty(EASY);}, false);
 normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
@@ -108,6 +109,9 @@ onlongtouch = function(e, canvas, tileSize) {
 
 function newGame() {
   state = beginGame();
+  if(debugMode) {
+    revealAllMines(state);
+  }
   setUpCanvas();
   paintCanvas();
   paintGame(state);
@@ -242,7 +246,6 @@ function changeToMenuScreen(){
 
 
 function paintGame(state) {
-  const table = state.table;
   const gridsize = state.gridsize;
   const tileSize = canvas.width / gridsize;
 
@@ -358,8 +361,6 @@ function showStats(){
 
   document.getElementById("distributionBody");
   showDistribution(winTimes);
-
-
 }
 
 function showStat(text, value){
@@ -538,57 +539,21 @@ function createInitialGameState() {
     initialState.table[x][y] = 100;
 
     //increase around numbers
-    if(x == 0){
-      if(y == 0){
-        initialState.table[x+1][y]   += 1;
-        initialState.table[x+1][y+1] += 1; 
-        initialState.table[x][y+1]   += 1; 
-      }
-      else if(y == size){
-        initialState.table[x+1][y-1] += 1;
-        initialState.table[x+1][y]   += 1;
-        initialState.table[x][y-1]   += 1;
-      }
-      else{
-        initialState.table[x+1][y+1] += 1; 
-        initialState.table[x][y+1]   += 1; 
-        initialState.table[x+1][y-1] += 1;
-        initialState.table[x+1][y]   += 1;
-        initialState.table[x][y-1]   += 1;
-      }
-    }
-    else if(x == size){
-      if(y == 0){
-        initialState.table[x-1][y]   += 1;
-        initialState.table[x-1][y+1] += 1;
-        initialState.table[x][y+1]   += 1; 
-      }
-      else if(y == size){
-        initialState.table[x-1][y]   += 1;
-        initialState.table[x-1][y-1] += 1;
-        initialState.table[x][y-1]   += 1;
-      }
-      else{
-        initialState.table[x-1][y]   += 1;
-        initialState.table[x-1][y+1] += 1;
-        initialState.table[x][y+1]   += 1;
-        initialState.table[x-1][y-1] += 1;
-        initialState.table[x][y-1]   += 1; 
-      }
-    }
-    else{
-      initialState.table[x+1][y-1] += 1;
-      initialState.table[x+1][y]   += 1;
-      initialState.table[x+1][y+1] += 1; 
-      initialState.table[x-1][y]   += 1;
-      initialState.table[x-1][y+1] += 1;
-      initialState.table[x-1][y-1] += 1;
-      initialState.table[x][y+1]   += 1; 
-      initialState.table[x][y-1]   += 1;
-    }
+    updateNeighboringNodes(x, y, initialState);
   }
 
   return initialState;
+}
+
+function updateNeighboringNodes(x, y, state){
+  for(let i = -1; i <= 1; i++){
+    for(let j = -1; j <= 1; j++){
+      let neighborX = x+i;
+      let neighborY = y+j;
+      if(neighborX == neighborY || outOfBounds(neighborX,neighborY,state)) continue;
+      state.table[neighborX][neighborY] += 1;
+    }
+  }
 }
 
 function flagTile(x, y){
@@ -713,6 +678,15 @@ function checkWinCondition(state){
 
 //GAME MECHANICS HELPER FUNCTIONS
 
+function revealAllMines(state){
+  for(let x=0; x<=state.gridsize; x++){
+    for(let y=0; y<=state.gridsize; y++){
+      if(isMine(x,y,state)){
+        state.explored[x][y] = FLAGGED;
+      }
+    }
+  }
+}
 
 function outOfBounds(x,y,state){
   if(x < 0 || x >= state.gridsize || y < 0 || y >= state.gridsize){
@@ -819,6 +793,3 @@ function paintCanvas(){
 function randInt(max) {
     return Math.floor(Math.random() * max) + 1;
 }
-
-
-
