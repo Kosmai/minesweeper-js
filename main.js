@@ -32,6 +32,7 @@ const normalBtn = document.getElementById('normalButton');
 const hardBtn = document.getElementById('hardButton');
 const expertBtn = document.getElementById('expertButton');
 const exportToClipboardBtn = document.getElementById('exportToClipboardButton');
+const downloadResultsBtn = document.getElementById('downloadResultsButton');
 const chosenDifficultyDisplay = document.getElementById('chosenDifficultyDisplay');
 const winMessage = document.getElementById('winMessage');
 const loseMessage = document.getElementById('loseMessage');
@@ -65,6 +66,7 @@ normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
 hardBtn.addEventListener('click',   function(){setDifficulty(HARD);}, false);
 expertBtn.addEventListener('click', function(){setDifficulty(EXPERT);}, false);
 exportToClipboardBtn.addEventListener('click', copyCanvasToClipboard);
+downloadResultsBtn.addEventListener('click', downloadCanvas)
 
 //KNOWN BUG - SET UP CANVAS MUST BE RUN ONCE, BUT MUST CHANGE ACCORDING TO LEVEL CHOSEN...
 //NOW IT CALLS MULTIPLE EVENT HANDLERS CAUSING FLAGS TO BE UNPLACABLE SOMETIMES (EVERY 2 GAMES)
@@ -304,6 +306,7 @@ function loseGame(){
   localStorage.setItem("stats", JSON.stringify(stats));
   loseMessage.innerHTML = "You lost!";
   exportToClipboardBtn.style.display = "inline-block";
+  downloadResultsBtn.style.display = "inline-block";
   // finalizeGame();
 }
 
@@ -317,11 +320,13 @@ function winGame(){
   localStorage.setItem("stats", JSON.stringify(stats));
   winMessage.innerHTML = "You won in " + elapsedSeconds + " seconds!";
   exportToClipboardBtn.style.display = "inline-block";
+  downloadResultsBtn.style.display = "inline-block";
   // finalizeGame();
 }
 
 function finalizeGame(){
   exportToClipboardBtn.style.display = "none";
+  downloadResultsBtn.style.display = "none";
   gameStarted = false;
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["totalGames"] += 1;
@@ -797,6 +802,14 @@ function paintCanvas(){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   const gridsize = state.gridsize;
   const tileSize = canvas.width / gridsize;
+}
+
+function downloadCanvas(){
+  let anchor = document.createElement("a");
+  anchor.download = "image.png";  
+  anchor.href = canvas.toDataURL("image/png");
+  anchor.click();
+  anchor.remove();
 }
 
 function copyCanvasToClipboard(){
