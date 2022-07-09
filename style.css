@@ -73,6 +73,13 @@ body {
 	display: none;
 }
 
+#downloadResultsButton{
+	border-radius: 0%;
+	border: none;
+	transition: transform 0.4s;
+	display: none;
+}
+
 #difficultyChoice{
 	margin-top: 10rem;
 	border: none;
