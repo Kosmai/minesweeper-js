@@ -2,6 +2,11 @@ const BG_COLOUR = '#231f20';
 const MINE_COLOR = '#e66916';
 const FLAG_COLOR = '#c2c2c2';
 const TILE_COLORS = ['#e4e4e4','#f2f94f','#7df94f','#3cf9f2','#f8ad2c','#1928ff','#12ff6f','#fc12ff','#ff0000'];
+const WIN_COLOR = '#7df94f';
+const LOSE_COLOR = '#ee112b';
+const DIFFICULTY_COLORS = ['#9bff00', '#ffe600', '#ff1e5a', '#c40050', '#620028'];
+
+const DIFFICULTY_NAMES = ["Easy", "Normal", "Hard", "EXPERT"];
 
 const LEFT_CLICK  = 1;
 const RIGHT_CLICK = 3;
@@ -31,6 +36,8 @@ const easyBtn = document.getElementById('easyButton');
 const normalBtn = document.getElementById('normalButton');
 const hardBtn = document.getElementById('hardButton');
 const expertBtn = document.getElementById('expertButton');
+const exportToClipboardBtn = document.getElementById('exportToClipboardButton');
+const downloadResultsBtn = document.getElementById('downloadResultsButton');
 const chosenDifficultyDisplay = document.getElementById('chosenDifficultyDisplay');
 
 
@@ -61,6 +68,8 @@ easyBtn.addEventListener('click',   function(){setDifficulty(EASY);}, false);
 normalBtn.addEventListener('click', function(){setDifficulty(NORMAL);}, false);
 hardBtn.addEventListener('click',   function(){setDifficulty(HARD);}, false);
 expertBtn.addEventListener('click', function(){setDifficulty(EXPERT);}, false);
+exportToClipboardBtn.addEventListener('click', copyCanvasToClipboard);
+downloadResultsBtn.addEventListener('click', downloadCanvas)
 
 //KNOWN BUG - SET UP CANVAS MUST BE RUN ONCE, BUT MUST CHANGE ACCORDING TO LEVEL CHOSEN...
 //NOW IT CALLS MULTIPLE EVENT HANDLERS CAUSING FLAGS TO BE UNPLACABLE SOMETIMES (EVERY 2 GAMES)
@@ -292,25 +301,31 @@ function restartGame(){
 }
 
 function loseGame(){
-  //implement something better
-  window.alert("You lost");
+  clearInterval(timer);
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["losses"] += 1;
   localStorage.setItem("stats", JSON.stringify(stats));
-  finalizeGame();
+  exportToClipboardBtn.style.display = "inline-block";
+  downloadResultsBtn.style.display = "inline-block";
+  let loseMessage = "You lost in " + elapsedSeconds + " seconds!";
+  switchToResultCanvas(false, loseMessage);
 }
 
 function winGame(){
-  //implement something better
-  window.alert("You won in " + elapsedSeconds + " seconds");
+  clearInterval(timer);
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["wins"] += 1;
   stats[difficulty]["winTimes"].push(elapsedSeconds);
   localStorage.setItem("stats", JSON.stringify(stats));
-  finalizeGame();
+  exportToClipboardBtn.style.display = "inline-block";
+  downloadResultsBtn.style.display = "inline-block";
+  let winMessage = "You won in " + elapsedSeconds + " seconds!";
+  switchToResultCanvas(true, winMessage);
 }
 
 function finalizeGame(){
+  exportToClipboardBtn.style.display = "none";
+  downloadResultsBtn.style.display = "none";
   gameStarted = false;
   var stats = JSON.parse(localStorage.getItem("stats"));
   stats[difficulty]["totalGames"] += 1;
@@ -605,7 +620,7 @@ function openTile(x, y){
       revealTile( x ,y+1,state);
       revealTile(x+1,y-1,state);
       revealTile(x+1, y ,state);
-      revealTile(x+1,y+1,state);    
+      revealTile(x+1,y+1,state);
   }
   paintGame(state);
 }
@@ -730,7 +745,6 @@ function setUpCanvas(){
   ctx = canvas.getContext('2d');
 
   canvas.width = canvas.height = CANVAS_SIZE;
-  const tileSize = canvas.width / GRID_SIZE;
 
   ctx.fillStyle = BG_COLOUR;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -743,13 +757,9 @@ function setUpCanvas(){
   ctx = canvas.getContext("2d");
 
   canvas.addEventListener('contextmenu', event => event.preventDefault());
-  canvas.addEventListener('mousedown', function(e) {
-  getCursorPosition(canvas, e, tileSize);});
-  canvas.addEventListener("touchstart", function(e){
-    touchstart(e, canvas, tileSize);
-  });
-  canvas.addEventListener("touchend", function(e){
-    touchend(e, canvas, tileSize);});
+  canvas.addEventListener('mousedown', handleMouseDown);
+  canvas.addEventListener("touchstart", handleTouchStart);
+  canvas.addEventListener("touchend", handleTouchEnd);
 }
 
 
@@ -786,6 +796,77 @@ function paintCanvas(){
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   const gridsize = state.gridsize;
   const tileSize = canvas.width / gridsize;
+}
+
+function downloadCanvas(){
+  let anchor = document.createElement("a");
+  anchor.download = "image.png";  
+  anchor.href = canvas.toDataURL("image/png");
+  anchor.click();
+  anchor.remove();
+}
+
+function copyCanvasToClipboard(){
+  canvas.toBlob(blob => {
+    try{
+      navigator.clipboard.write([
+        new ClipboardItem({
+          [blob.type]: blob
+        })
+      ]);
+      console.log('Canvas copied.');
+    } catch(err) {
+      console.error(err.name, err.message);
+    }
+  });
+}
+
+function switchToResultCanvas(gameWon, message){
+  // Keep content from canvas
+  let imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // Change canvas height
+  canvas.height = CANVAS_SIZE + 90;
+
+  // Remove event listeners
+  canvas.removeEventListener('mousedown', handleMouseDown);
+  canvas.removeEventListener("touchstart", handleTouchStart);
+  canvas.removeEventListener("touchend", handleTouchEnd);
+
+  // Fill canvas and draw previous content
+  ctx.fillStyle = BG_COLOUR;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.putImageData(imageData, 0, 0);
+
+  // Win Message
+  console.log(CANVAS_SIZE);
+  ctx.font = '20px Arial';
+  ctx.fillStyle = gameWon? WIN_COLOR : LOSE_COLOR;
+  ctx.textAlign = 'center';
+  ctx.fillText(message, CANVAS_SIZE/2, CANVAS_SIZE + 30);
+
+  // Difficulty
+  ctx.textAlign = 'end';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText("Difficulty: ", CANVAS_SIZE/2+20, CANVAS_SIZE + 65);
+  ctx.textAlign = 'start';
+  ctx.fillStyle = DIFFICULTY_COLORS[difficulty];
+  ctx.fillText(DIFFICULTY_NAMES[difficulty], CANVAS_SIZE/2+20, CANVAS_SIZE + 65);
+}
+
+function handleMouseDown(e) {
+  const tileSize = canvas.width / GRID_SIZE;
+  getCursorPosition(canvas, e, tileSize);
+}
+
+function handleTouchStart(e) {
+  const tileSize = canvas.width / GRID_SIZE;
+  touchstart(e, canvas, tileSize);
+}
+
+function handleTouchEnd(e) {
+  const tileSize = canvas.width / GRID_SIZE;
+  touchend(e, canvas, tileSize);
 }
 
 //UTILS
